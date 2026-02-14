@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Roulette - Theo's Casino</title>
+
+  <style>
+    :root{
+      --bg1:#071a33;
+      --bg2:#051224;
+      --card: rgba(255,255,255,.06);
+      --cardBorder: rgba(255,255,255,.10);
+      --text:#eaf2ff;
+      --muted: rgba(234,242,255,.70);
+      --accent:#8ab4ff;
+      --btn:#e8eefc;
+      --btnText:#0b1a2f;
+      --line: rgba(255,255,255,.12);
+      --danger:#ff6b6b;
+      --success:#4ade80;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      min-height:100vh;
+      background:
+        radial-gradient(1200px 600px at 50% -100px, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(900px 500px at 70% 20%, rgba(80,160,255,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+    }
+
+    .page{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 50px;
+    }
+
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-top: 10px;
+    }
+
+    .header .spacer{ width: 140px; }
+
+    .title{
+      flex:1;
+      text-align:center;
+      font-size: 56px;
+      font-weight: 900;
+      letter-spacing: .5px;
+      margin: 12px 0 8px;
+      text-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+      margin-top: 18px;
+      align-items:start;
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--cardBorder);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+    }
+
+    .card h2{
+      margin:0 0 12px 0;
+      font-size: 22px;
+      letter-spacing: .2px;
+    }
+
+    .muted{ color: var(--muted); font-weight: 600; }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top: 12px;
+    }
+
+    button,
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none;
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      cursor:pointer;
+      font-weight:800;
+      font-family:inherit;
+      font-size:14px;
+      background:#ffffff;
+      color:#0b1a2f;
+      box-shadow:0 10px 22px rgba(0,0,0,.25);
+    }
+
+    button:hover, .btn:hover{ filter:brightness(0.98); }
+    button:active, .btn:active{ transform: translateY(1px); }
+
+    button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      margin-top: 8px;
+    }
+
+    label{ font-weight:800; }
+
+    input, select{
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(15,23,42,0.55);
+      color: var(--text);
+      outline:none;
+    }
+
+    input{ width: 120px; }
+    select{ min-width: 170px; }
+
+    .status{
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(15,23,42,0.40);
+    }
+
+    .result-big{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      margin-top: 12px;
+    }
+
+    .ball{
+      width: 74px;
+      height: 74px;
+      border-radius: 18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 900;
+      font-size: 30px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.12);
+      font-weight: 800;
+    }
+
+    .pill.red{ color: #ffd6d6; border-color: rgba(255,107,107,.35); }
+    .pill.black{ color: #e5e7eb; border-color: rgba(255,255,255,.18); }
+    .pill.green{ color: #d1fae5; border-color: rgba(74,222,128,.35); }
+
+    .win{ color: var(--success); font-weight: 900; }
+    .lose{ color: var(--danger); font-weight: 900; }
+
+    .mini{
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 10px;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .header .spacer{ width:auto; }
+      .title{ font-size: 44px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="header">
+      <div class="spacer"></div>
+      <div class="title">Roulette</div>
+      <div class="spacer"></div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Wallet</h2>
+        <div id="bankroll" class="muted">Loading...</div>
+
+        <div class="actions">
+          <button type="button" onclick="getWallet()">Refresh</button>
+          <a class="btn" href="/deposit">Deposit Any Amount</a>
+        </div>
+
+        <div class="mini">
+          Payouts (simple):<br>
+          • Number: 35:1<br>
+          • Red/Black: 1:1<br>
+          • Even/Odd: 1:1
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Place Your Bet</h2>
+
+        <div class="controls">
+          <label for="betType">Type</label>
+          <select id="betType" onchange="onBetTypeChange(); syncSpinButton();">
+            <option value="red">Red</option>
+            <option value="black">Black</option>
+            <option value="even">Even</option>
+            <option value="odd">Odd</option>
+            <option value="number">Number</option>
+          </select>
+
+          <label for="betValue" id="betValueLabel" style="display:none;">#</label>
+          <input id="betValue" type="number" min="0" max="36" value="7" style="display:none;" />
+
+          <label for="betAmount">Bet</label>
+          <input id="betAmount" type="number" min="1" value="10" oninput="syncSpinButton()" />
+
+          <button id="spinBtn" type="button" onclick="spin()">Spin</button>
+        </div>
+
+        <div class="result-big">
+          <div class="ball" id="resultNumber">?</div>
+          <div id="resultColor" class="pill">—</div>
+        </div>
+
+        <div class="status">
+          <div id="resultText" class="muted">Pick a bet and spin.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✅ Back to Casino like Blackjack -->
+    <div style="margin-top:30px; text-align:center;">
+      <a href="/" class="btn">Back to Casino</a>
+    </div>
+  </div>
+
+  <script>
+    const RED = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+
+    let currentBankroll = 0;
+    let spinLocked = false;
+
+    function colorOf(n){
+      if (n === 0) return "green";
+      return RED.has(n) ? "red" : "black";
+    }
+
+    function onBetTypeChange(){
+      const t = document.getElementById("betType").value;
+      const showNumber = (t === "number");
+      document.getElementById("betValue").style.display = showNumber ? "inline-block" : "none";
+      document.getElementById("betValueLabel").style.display = showNumber ? "inline-block" : "none";
+    }
+
+    async function getWallet() {
+      const res = await fetch('/api/wallet');
+      const data = await res.json();
+      currentBankroll = Number(data.bankroll ?? 0);
+      document.getElementById('bankroll').innerText = "Bankroll: $" + currentBankroll;
+      syncSpinButton();
+      return currentBankroll;
+    }
+
+    function syncSpinButton(){
+      const btn = document.getElementById("spinBtn");
+      if (!btn) return;
+      btn.disabled = spinLocked;
+    }
+
+    async function spin(){
+      if (spinLocked) return;
+
+      const betType = document.getElementById("betType").value;
+      const betAmount = Number(document.getElementById("betAmount").value || 0);
+      const betValue = Number(document.getElementById("betValue").value || 0);
+
+      if (!Number.isFinite(betAmount) || betAmount <= 0){
+        document.getElementById("resultText").innerText = "Bet must be greater than 0.";
+        return;
+      }
+
+      await getWallet();
+
+      if (currentBankroll <= 0){
+        alert("You have no money. Deposit first.");
+        document.getElementById("resultText").innerText = "You have no money. Deposit first.";
+        return;
+      }
+
+      if (betAmount > currentBankroll){
+        alert(`Insufficient funds. Your bankroll is $${currentBankroll}.`);
+        document.getElementById("resultText").innerText = `Insufficient funds. Your bankroll is $${currentBankroll}.`;
+        return;
+      }
+
+      spinLocked = true;
+      syncSpinButton();
+
+      try {
+        const w = await fetch('/api/wallet/withdraw?amount=' + encodeURIComponent(betAmount), { method:'POST' });
+        const wText = await w.text();
+
+        if (!w.ok){
+          alert(wText || "Withdraw failed.");
+          document.getElementById("resultText").innerText = wText || "Withdraw failed.";
+          return;
+        }
+
+        await getWallet();
+
+        const n = Math.floor(Math.random() * 37);
+        const c = colorOf(n);
+
+        document.getElementById("resultNumber").innerText = n;
+
+        const pill = document.getElementById("resultColor");
+        pill.className = "pill " + c;
+        pill.innerText = c.toUpperCase();
+
+        let win = false;
+        let payoutMult = 0;
+
+        if (betType === "red")   { win = (c === "red");   payoutMult = 1; }
+        if (betType === "black") { win = (c === "black"); payoutMult = 1; }
+        if (betType === "even")  { win = (n !== 0 && n % 2 === 0); payoutMult = 1; }
+        if (betType === "odd")   { win = (n % 2 === 1);  payoutMult = 1; }
+        if (betType === "number"){ win = (n === betValue); payoutMult = 35; }
+
+        if (win){
+          const totalReturn = betAmount + (betAmount * payoutMult);
+          await fetch('/api/wallet/deposit?amount=' + encodeURIComponent(totalReturn), { method:'POST' });
+
+          document.getElementById("resultText").innerHTML =
+            `<span class="win">WIN!</span> You won <b>$${betAmount * payoutMult}</b> (paid back <b>$${totalReturn}</b>).`;
+        } else {
+          document.getElementById("resultText").innerHTML =
+            `<span class="lose">LOSE.</span> You lost <b>$${betAmount}</b>.`;
+        }
+
+        await getWallet();
+      } finally {
+        spinLocked = false;
+        syncSpinButton();
+      }
+    }
+
+    onBetTypeChange();
+    getWallet();
+  </script>
+</body>
+</html>

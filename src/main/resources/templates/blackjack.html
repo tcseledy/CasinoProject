@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Blackjack - Theo's Casino</title>
+
+  <style>
+    :root{
+      --bg1:#071a33;
+      --bg2:#051224;
+      --card: rgba(255,255,255,.06);
+      --cardBorder: rgba(255,255,255,.10);
+      --text:#eaf2ff;
+      --muted: rgba(234,242,255,.70);
+      --btnWhite:#ffffff;
+      --btnText:#0b1a2f;
+      --line: rgba(255,255,255,.12);
+      --danger:#ff6b6b;
+      --success:#4ade80;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      min-height:100vh;
+      background:
+        radial-gradient(1200px 600px at 50% -100px, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(900px 500px at 70% 20%, rgba(80,160,255,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+    }
+
+    .page{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 50px;
+    }
+
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-top: 10px;
+    }
+
+    .header .spacer{ width: 140px; }
+
+    .title{
+      flex:1;
+      text-align:center;
+      font-size: 56px;
+      font-weight: 900;
+      letter-spacing: .5px;
+      margin: 12px 0 8px;
+      text-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+      margin-top: 18px;
+      align-items:start;
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--cardBorder);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+    }
+
+    .card h2{
+      margin:0 0 12px 0;
+      font-size: 22px;
+      letter-spacing: .2px;
+    }
+
+    .muted{ color: var(--muted); font-weight: 600; }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top: 12px;
+    }
+
+    button, .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none;
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      cursor:pointer;
+      font-weight:800;
+      font-family:inherit;
+      font-size:14px;
+      background: var(--btnWhite);
+      color: var(--btnText);
+      box-shadow:0 10px 22px rgba(0,0,0,.25);
+      outline: none !important;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:hover, .btn:hover{ filter:brightness(0.98); }
+    button:active, .btn:active{ transform: translateY(1px); }
+
+    button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      margin-top: 8px;
+    }
+
+    label{ font-weight:800; }
+
+    input{
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(15,23,42,0.55);
+      color: var(--text);
+      outline:none;
+      width: 120px;
+    }
+
+    .status{
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(15,23,42,0.40);
+      text-align:left;
+    }
+
+    /* message bar (same vibe as other pages) */
+    .msg{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(15,23,42,0.40);
+      text-align:left;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    pre{
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(15,23,42,0.40);
+      color: var(--muted);
+      white-space: pre-wrap;
+      overflow:auto;
+    }
+
+    .win{ color: var(--success); font-weight: 900; }
+    .lose{ color: var(--danger); font-weight: 900; }
+
+    .back-row{
+      margin-top: 30px;
+      text-align:center;
+    }
+
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .header .spacer{ width:auto; }
+      .title{ font-size: 44px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="header">
+      <div class="spacer"></div>
+      <div class="title">Blackjack</div>
+      <div class="spacer"></div>
+    </div>
+
+    <div class="grid">
+      <!-- Wallet -->
+      <div class="card">
+        <h2>Wallet</h2>
+        <div id="bankroll" class="muted">Loading...</div>
+
+        <div class="actions">
+          <button type="button" onclick="getWalletValue()">Refresh</button>
+          <a class="btn" href="/deposit">Deposit Any Amount</a>
+        </div>
+      </div>
+
+      <!-- Game -->
+      <div class="card">
+        <h2>Game</h2>
+
+        <div class="controls">
+          <label for="bjBet">Bet:</label>
+          <input id="bjBet" type="number" value="50" min="1">
+          <button type="button" onclick="bjStart()">Start</button>
+          <button type="button" onclick="bjHit()">Hit</button>
+          <button type="button" onclick="bjStand()">Stand</button>
+        </div>
+
+        <div class="status">
+          <div><b>Status:</b> <span id="bjStatus">Not started</span></div>
+          <div><b>Player:</b> <span id="bjPlayerCards">—</span> (<span id="bjPlayerTotal">0</span>)</div>
+          <div><b>Dealer:</b> <span id="bjDealerCards">—</span> (<span id="bjDealerTotal">0</span>)</div>
+        </div>
+
+        <div id="bjMsg" class="msg">Place a bet and press Start.</div>
+
+        <pre id="bjRaw"></pre>
+      </div>
+    </div>
+
+    <div class="back-row">
+      <a href="/" class="btn">Back to Casino</a>
+    </div>
+  </div>
+
+  <script>
+    let bjInProgress = false;
+    let lastStartAt = 0;
+
+    function setMsg(text){
+      const el = document.getElementById("bjMsg");
+      if (el) el.textContent = text;
+    }
+
+    function setGameButtonsEnabled(){
+      const startBtn = document.querySelector('button[onclick="bjStart()"]');
+      const hitBtn   = document.querySelector('button[onclick="bjHit()"]');
+      const standBtn = document.querySelector('button[onclick="bjStand()"]');
+      const betInput = document.getElementById("bjBet");
+
+      if (startBtn) startBtn.disabled = bjInProgress;
+      if (hitBtn) hitBtn.disabled = !bjInProgress;
+      if (standBtn) standBtn.disabled = !bjInProgress;
+
+      // bet editable only when NOT playing
+      if (betInput) betInput.disabled = bjInProgress;
+    }
+
+    async function getWalletValue(){
+      const res = await fetch('/api/wallet', { cache: 'no-store' });
+      const data = await res.json();
+      const bankroll = Number(data.bankroll ?? 0);
+      document.getElementById('bankroll').innerText = "Bankroll: $" + bankroll;
+      return bankroll;
+    }
+
+    function renderBj(state){
+      const raw = document.getElementById("bjRaw");
+      const status = document.getElementById("bjStatus");
+      const pCards = document.getElementById("bjPlayerCards");
+      const dCards = document.getElementById("bjDealerCards");
+      const pTot = document.getElementById("bjPlayerTotal");
+      const dTot = document.getElementById("bjDealerTotal");
+
+      const statusText = String(state?.status ?? "");
+
+      if (raw) raw.textContent = JSON.stringify(state, null, 2);
+      if (status) status.textContent = statusText || "—";
+      if (pCards) pCards.textContent = (state.playerHand || []).join(" ") || "—";
+      if (dCards) dCards.textContent = (state.dealerHand || []).join(" ") || "—";
+      if (pTot) pTot.textContent = state.playerTotal ?? 0;
+      if (dTot) dTot.textContent = state.dealerTotal ?? 0;
+
+      setMsg(statusText || (bjInProgress ? "Playing..." : "Place a bet and press Start."));
+    }
+
+    async function payoutIfFinished(state){
+      if (!state) return;
+
+      const statusRaw = String(state.status ?? "");
+      const status = statusRaw.toLowerCase();
+
+      const finished =
+        state.finished === true ||
+        status.includes("wins") ||
+        status.includes("bust") ||
+        status.includes("push") ||
+        status.includes("tie") ||
+        status.includes("draw") ||
+        status.includes("blackjack");
+
+      if (!finished) return;
+
+      const bet = Number(state.bet ?? document.getElementById("bjBet").value ?? 0);
+
+      // natural blackjack (3:2) detection
+      const isNaturalBlackjack =
+        status.includes("blackjack") ||
+        ((Number(state.playerTotal) === 21) && Array.isArray(state.playerHand) && state.playerHand.length === 2);
+
+      const playerWin =
+        status.includes("player wins") ||
+        status.includes("dealer bust") ||
+        status.includes("you win");
+
+      const push =
+        status.includes("push") ||
+        status.includes("tie") ||
+        status.includes("draw");
+
+      // payout here means "how much to DEPOSIT back after bet was already withdrawn"
+      // normal win: bet back + 1x profit => 2 * bet
+      // natural blackjack 3:2: bet back + 1.5x profit => 2.5 * bet
+      let payout = 0;
+      if (isNaturalBlackjack) payout = bet * 2.5;
+      else if (playerWin) payout = bet * 2;
+      else if (push) payout = bet;
+      else payout = 0;
+
+      if (payout > 0) {
+        const r = await fetch(
+          '/api/wallet/deposit?amount=' + encodeURIComponent(payout),
+          { method: 'POST' }
+        );
+        if (!r.ok) console.log("deposit failed:", r.status, await r.text());
+      }
+
+      await getWalletValue();
+
+      bjInProgress = false;
+      setGameButtonsEnabled();
+      setMsg(statusRaw || "Hand finished.");
+    }
+
+    async function bjStart(){
+      const bet = Number(document.getElementById("bjBet").value || 0);
+
+      const now = Date.now();
+      if (now - lastStartAt < 1500) {
+        setMsg("Slow down — wait a second before starting again.");
+        return;
+      }
+      lastStartAt = now;
+
+      if (bjInProgress) {
+        setMsg("Finish the current hand before starting a new one.");
+        return;
+      }
+
+      if (!Number.isFinite(bet) || bet <= 0) {
+        setMsg("Enter a valid bet.");
+        return;
+      }
+
+      const currentBankroll = await getWalletValue();
+
+      if (currentBankroll <= 0){
+        alert("You have no money. Deposit first.");
+        setMsg("You have no money. Deposit first.");
+        return;
+      }
+
+      if (bet > currentBankroll){
+        alert(`Insufficient funds. Your bankroll is $${currentBankroll}.`);
+        setMsg(`Insufficient funds. Your bankroll is $${currentBankroll}.`);
+        return;
+      }
+
+      bjInProgress = true;
+      setGameButtonsEnabled();
+      setMsg("Starting hand...");
+
+      const w = await fetch('/api/wallet/withdraw?amount=' + encodeURIComponent(bet), { method:'POST' });
+      if (!w.ok) {
+        bjInProgress = false;
+        setGameButtonsEnabled();
+        await getWalletValue();
+        setMsg("Withdraw failed.");
+        return;
+      }
+
+      await getWalletValue();
+
+      const res = await fetch('/api/blackjack/start?bet=' + encodeURIComponent(bet), { method:'POST' });
+      const text = await res.text();
+      if (!res.ok) {
+        bjInProgress = false;
+        setGameButtonsEnabled();
+        await getWalletValue();
+        setMsg("Start failed.");
+        return;
+      }
+
+      const data = JSON.parse(text);
+      renderBj(data);
+      await payoutIfFinished(data);
+    }
+
+    async function bjHit(){
+      if (!bjInProgress) { setMsg("Place a bet and press Start."); return; }
+
+      const res = await fetch('/api/blackjack/hit', { method:'POST' });
+      const text = await res.text();
+      if (!res.ok) { setMsg("Hit failed."); return; }
+
+      const data = JSON.parse(text);
+      renderBj(data);
+      await payoutIfFinished(data);
+    }
+
+    async function bjStand(){
+      if (!bjInProgress) { setMsg("Place a bet and press Start."); return; }
+
+      const res = await fetch('/api/blackjack/stand', { method:'POST' });
+      const text = await res.text();
+      if (!res.ok) { setMsg("Stand failed."); return; }
+
+      const data = JSON.parse(text);
+      renderBj(data);
+      await payoutIfFinished(data);
+    }
+
+    // init
+    setGameButtonsEnabled();
+    getWalletValue();
+    setMsg("Place a bet and press Start.");
+  </script>
+</body>
+</html>

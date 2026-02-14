@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Slots - Theo's Casino</title>
+
+  <style>
+    :root{
+      --bg1:#071a33;
+      --bg2:#051224;
+      --card: rgba(255,255,255,.06);
+      --cardBorder: rgba(255,255,255,.10);
+      --text:#eaf2ff;
+      --muted: rgba(234,242,255,.70);
+      --btnWhite:#ffffff;
+      --btnText:#0b1a2f;
+      --line: rgba(255,255,255,.12);
+      --danger:#ff6b6b;
+      --success:#4ade80;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      min-height:100vh;
+      background:
+        radial-gradient(1200px 600px at 50% -100px, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(900px 500px at 70% 20%, rgba(80,160,255,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+    }
+
+    .page{ max-width: 1100px; margin: 0 auto; padding: 28px 18px 50px; }
+
+    /* Make header match Blackjack: just centered title */
+    .header{
+      text-align:center;
+      margin-top: 10px;
+    }
+
+    .title{
+      flex:1;
+      text-align:center;
+      font-size: 56px;
+      font-weight: 900;   /* ← ADD THIS */
+      letter-spacing: .5px;
+      margin: 12px 0 8px;
+      text-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+      margin-top: 18px;
+      align-items:start;
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--cardBorder);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+    }
+
+    .card h2{ margin:0 0 12px 0; font-size: 22px; letter-spacing: .2px; }
+
+    .muted{ color: var(--muted); font-weight: 600; }
+
+    .actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top: 12px; }
+
+    button, .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none;
+      border:none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor:pointer;
+      font-weight: 800;
+      font-family: inherit;
+      font-size: 14px;
+      background: var(--btnWhite);
+      color: var(--btnText);
+      box-shadow: 0 10px 22px rgba(0,0,0,.25);
+      transition: transform .05s ease, filter .15s ease;
+      outline: none !important;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus, button:focus-visible,
+    .btn:focus, .btn:focus-visible{
+      outline: none !important;
+      box-shadow: 0 10px 22px rgba(0,0,0,.25);
+    }
+
+    button:hover, .btn:hover{ filter: brightness(0.98); }
+    button:active, .btn:active{ transform: translateY(1px); }
+
+    .controls{
+      display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top: 8px;
+    }
+    label{ font-weight:800; }
+
+    input{
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(15,23,42,0.55);
+      color: var(--text);
+      outline:none;
+      width: 120px;
+    }
+
+    .reels{ display:flex; gap:12px; margin-top: 14px; align-items:center; }
+    .reel{
+      width: 74px; height: 74px; border-radius: 18px;
+      display:flex; align-items:center; justify-content:center;
+      font-weight: 900; font-size: 34px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+
+    .status{
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(15,23,42,0.40);
+    }
+
+    .win{ color: var(--success); font-weight: 900; }
+    .lose{ color: var(--danger); font-weight: 900; }
+
+    .mini{
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 10px;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .title{ font-size: 44px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <div class="header">
+      <div class="title">Slots</div>
+    </div>
+
+    <div class="grid">
+      <!-- Wallet -->
+      <div class="card">
+        <h2>Wallet</h2>
+        <div id="bankroll" class="muted">Loading...</div>
+
+        <div class="actions">
+          <button onclick="getWallet()">Refresh</button>
+          <a class="btn" href="/deposit">Deposit Any Amount</a>
+        </div>
+      </div>
+
+      <!-- Game -->
+      <div class="card">
+        <h2>Slot Machine</h2>
+
+        <div class="controls">
+          <label for="bet">Bet</label>
+          <input id="bet" type="number" min="1" value="10" />
+          <button onclick="spin()">Spin</button>
+        </div>
+
+        <div class="reels" aria-label="reels">
+          <div class="reel" id="r1">?</div>
+          <div class="reel" id="r2">?</div>
+          <div class="reel" id="r3">?</div>
+        </div>
+
+        <div class="status">
+          <div id="result" class="muted">Place a bet and spin.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:30px; text-align:center;">
+      <a href="/" class="btn">Back to Casino</a>
+    </div>
+
+  </div>
+
+  <script>
+    async function getWallet() {
+      const res = await fetch('/api/wallet', { cache: 'no-store' });
+      const data = await res.json();
+      const bankroll = Number(data.bankroll ?? 0);
+      document.getElementById('bankroll').innerText = "Bankroll: $" + bankroll;
+      return bankroll;
+    }
+
+    async function spin() {
+      const bet = Number(document.getElementById('bet').value || 0);
+      if (bet <= 0) return;
+
+      const bankroll = await getWallet();
+
+      if (bankroll <= 0) {
+        alert("You have no money. Deposit first.");
+        document.getElementById('result').innerHTML =
+          `<span class="lose">You have no money. Deposit first.</span>`;
+        return;
+      }
+
+      if (bet > bankroll) {
+        alert(`Insufficient funds. Your bankroll is $${bankroll}.`);
+        document.getElementById('result').innerHTML =
+          `<span class="lose">Insufficient funds. Your bankroll is $${bankroll}.</span>`;
+        return;
+      }
+
+      const w = await fetch('/api/wallet/withdraw?amount=' + encodeURIComponent(bet), { method: 'POST' });
+      if (!w.ok) {
+        const msg = await w.text();
+        document.getElementById('result').innerHTML =
+          `<span class="lose">${msg || "Withdraw failed."}</span>`;
+        return;
+      }
+
+      const symbols = ["🍒","🍋","🔔","⭐","💎","7️⃣"];
+      const pick = () => symbols[Math.floor(Math.random() * symbols.length)];
+      const a = pick(), b = pick(), c = pick();
+
+      document.getElementById('r1').innerText = a;
+      document.getElementById('r2').innerText = b;
+      document.getElementById('r3').innerText = c;
+
+      const win = (a === b && b === c);
+
+      if (win) {
+        const profit = bet * 5;
+        const totalReturn = bet + profit;
+
+        const d = await fetch('/api/wallet/deposit?amount=' + encodeURIComponent(totalReturn), { method: 'POST' });
+        if (!d.ok) {
+          const msg = await d.text();
+          document.getElementById('result').innerHTML =
+            `<span class="lose">${msg || "Deposit payout failed."}</span>`;
+          return;
+        }
+
+        document.getElementById('result').innerHTML =
+          `<span class="win">JACKPOT!</span> You won <b>$${profit}</b>.`;
+      } else {
+        document.getElementById('result').innerHTML =
+          `<span class="lose">No win.</span> You lost <b>$${bet}</b>.`;
+      }
+
+      await getWallet();
+    }
+
+    getWallet();
+  </script>
+</body>
+</html>
