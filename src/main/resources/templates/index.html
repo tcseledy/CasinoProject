@@ -218,18 +218,24 @@
 
     <script>
       async function getWallet() {
-        const res = await fetch("/api/wallet");
+      const el = document.getElementById("bankroll");
+      try {
+        const res = await fetch("/api/wallet", { cache: "no-store" });
+
+        if (!res.ok) {
+          el.innerText = "Bankroll: $0";
+          return;
+        }
+
         const data = await res.json();
-        document.getElementById("bankroll").innerText =
-          "Bankroll: $" + (data.bankroll ?? 0);
+        const amount = Number(data.bankroll ?? data.amount ?? 0);
+        el.innerText = "Bankroll: $" + amount.toFixed(0);
+      } catch (e) {
+        el.innerText = "Bankroll: $0";
       }
+    }
 
-      async function deposit() {
-        await fetch("/api/wallet/deposit?amount=500", { method: "POST" });
-        getWallet();
-      }
-
-      getWallet();
+  getWallet();
     </script>
   </body>
 </html>
