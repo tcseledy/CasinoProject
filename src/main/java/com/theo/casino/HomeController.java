@@ -11,6 +11,16 @@ public class HomeController {
         return "index";
     }
 
+    @GetMapping("/log-in")
+    public String login() {
+        return "log-in";
+    }
+
+    @GetMapping("/sign-up")
+    public String signup() {
+        return "sign-up";
+    }
+
     @GetMapping("/deposit")
     public String deposit() {
         return "deposit";
