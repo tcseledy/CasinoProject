@@ -1,35 +1,45 @@
-package com.theo.casino.auth;
+package com.theo.casino.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-        http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/sign-up", "/log-in", "/css/**", "/js/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/log-in")          // 👈 use YOUR page
-                .loginProcessingUrl("/log-in")
-                .defaultSuccessUrl("/", true)
-                .failureUrl("/log-in?error=true")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
-            );
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  http
+    .csrf(csrf -> csrf.disable())
+    .authorizeHttpRequests(auth -> auth
+      .requestMatchers(
+        "/", "/log-in", "/signup",
+        "/error",
+        "/css/**", "/js/**", "/images/**"
+      ).permitAll()
+      .anyRequest().authenticated()
+    )
+    .formLogin(form -> form
+      .loginPage("/log-in")
+      .loginProcessingUrl("/log-in")
+      .defaultSuccessUrl("/", true)
+      .failureUrl("/log-in?error=true")
+      .permitAll()
+    )
+    .logout(logout -> logout
+      .logoutUrl("/logout")
+      .logoutSuccessUrl("/log-in?logout=true")
+      .permitAll()
+    );
 
-        http.csrf(csrf -> csrf.disable());
-
-        return http.build();
+  return http.build();
     }
 }
