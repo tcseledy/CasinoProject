@@ -22,6 +22,7 @@ This project is a casino-style web application built to demonstrate backend deve
 
 ```bash
 ./mvnw spring-boot:run
+```
 
 Then open:
 
