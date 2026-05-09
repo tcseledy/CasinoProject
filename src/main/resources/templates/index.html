@@ -35,38 +35,17 @@
         text-align: center;
       }
 
-      .login-link {
-        position: absolute;
-        top: 25px;
-        right: 40px;
-        color: white;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 18px;
-      }
-
-      .login-link:hover {
-        text-decoration: underline;
-      }
-
-      .login-linka {
-        position: absolute;
-        top: 25px;
-        right: 110px;
-        color: white;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 18px;
-      }
-
-      .login-linka:hover {
-        text-decoration: underline;
-      }
-
       .wrap {
         max-width: 1100px;
-        margin: 80px auto;
+        margin: 26px auto 80px;
         padding: 0 20px;
+      }
+
+      .login-status {
+        color: rgba(255,255,255,.72);
+        font-size: 14px;
+        font-weight: 800;
+        padding: 8px 10px;
       }
 
       .top-nav{
@@ -74,11 +53,11 @@
         align-items:center;
         justify-content:space-between;
         gap:18px;
-        max-width:1100px;
-        margin:0 auto;
-        padding:16px 18px;
+        width:100%;
+        margin:0;
+        padding:16px max(24px, calc((100vw - 1500px) / 2 + 24px));
         border-bottom:1px solid var(--line);
-        background:rgba(8,20,37,.72);
+        background:rgba(8,20,37,.88);
         backdrop-filter:blur(12px);
       }
 
@@ -225,13 +204,12 @@
           <a href="/roulette">Roulette</a>
           <a sec:authorize="isAnonymous()" href="/log-in">Log-in</a>
           <a sec:authorize="isAnonymous()" href="/signup">Sign-up</a>
+          <span sec:authorize="isAuthenticated()" class="login-status">
+            <span sec:authentication="name"></span>
+          </span>
           <a sec:authorize="isAuthenticated()" href="/logout">Logout</a>
         </div>
       </nav>
-
-      <div sec:authorize="isAuthenticated()" style="margin-top:18px; font-size:14px;">
-          Logged in as <strong><span sec:authentication="name"></span></strong>
-      </div>
     <div class="wrap">
       <h1>Theo's Casino</h1>
 
