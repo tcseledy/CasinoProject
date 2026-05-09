@@ -16,6 +16,11 @@ public class HomeController {
         return "deposit";
     }
 
+    @GetMapping("/wallet")
+    public String wallet() {
+        return "deposit";
+    }
+
     @GetMapping("/blackjack")
     public String blackjack() {
         return "blackjack";

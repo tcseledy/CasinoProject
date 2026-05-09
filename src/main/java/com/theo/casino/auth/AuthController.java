@@ -2,6 +2,7 @@ package com.theo.casino.auth;
 
 import com.theo.casino.AppUser;
 import com.theo.casino.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,9 +24,16 @@ public class AuthController {
     return "signup";
   }
 
+  @GetMapping("/sign-up")
+  public String signUpAlias() {
+    return "redirect:/signup";
+  }
+
   @PostMapping("/signup")
   public String signup(@RequestParam String username,
                        @RequestParam String password,
+                       @RequestParam String confirmPassword,
+                       HttpServletRequest request,
                        Model model) {
 
     String u = (username == null) ? "" : username.trim();
@@ -35,13 +43,24 @@ public class AuthController {
       return "signup";
     }
 
+    if (!password.equals(confirmPassword)) {
+      model.addAttribute("error", "Passwords do not match.");
+      return "signup";
+    }
+
     if (users.existsByUsername(u)) {
       model.addAttribute("error", "Username already taken.");
       return "signup";
     }
 
     users.save(new AppUser(u, encoder.encode(password)));
-    return "redirect:/log-in";
+    try {
+      request.login(u, password);
+    } catch (Exception ignored) {
+      return "redirect:/log-in?signupSuccess=true";
+    }
+
+    return "redirect:/";
   }
 
   @GetMapping("/log-in")

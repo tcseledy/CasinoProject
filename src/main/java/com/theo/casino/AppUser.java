@@ -15,6 +15,9 @@ public class AppUser {
   @Column(nullable = false)
   private String passwordHash;
 
+  @Column(nullable = false, columnDefinition = "integer default 0")
+  private int bankroll = 0;
+
   protected AppUser() {}
 
   public AppUser(String username, String passwordHash) {
@@ -25,4 +28,6 @@ public class AppUser {
   public Long getId() { return id; }
   public String getUsername() { return username; }
   public String getPasswordHash() { return passwordHash; }
+  public int getBankroll() { return bankroll; }
+  public void setBankroll(int bankroll) { this.bankroll = Math.max(0, bankroll); }
 }

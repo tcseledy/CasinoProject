@@ -1,8 +1,8 @@
 package com.theo.casino;
 
-import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,30 +10,29 @@ import java.util.Map;
 @RequestMapping("/api/wallet")
 public class WalletApiController {
 
-    private static final String KEY = "BANKROLL";
+    private final UserRepository users;
 
-    private int getBankroll(HttpSession session) {
-    Integer money = (Integer) session.getAttribute(KEY);
-    if (money == null) {
-        money = 0;  // start with nothing
-        session.setAttribute(KEY, money);
+    public WalletApiController(UserRepository users) {
+        this.users = users;
     }
-    return money;
-}
 
     @GetMapping
-    public Map<String, Object> get(HttpSession session) {
+    public Map<String, Object> get(Principal principal) {
+        AppUser user = currentUser(principal);
+
         Map<String, Object> response = new HashMap<>();
-        response.put("bankroll", getBankroll(session));
+        response.put("bankroll", user.getBankroll());
         return response;
     }
 
     @PostMapping("/deposit")
-    public Map<String, Object> deposit(@RequestParam int amount, HttpSession session) {
+    public Map<String, Object> deposit(@RequestParam int amount, Principal principal) {
+        AppUser user = currentUser(principal);
         if (amount <= 0) amount = 0;
 
-        int updated = getBankroll(session) + amount;
-        session.setAttribute(KEY, updated);
+        int updated = user.getBankroll() + amount;
+        user.setBankroll(updated);
+        users.save(user);
 
         Map<String, Object> response = new HashMap<>();
         response.put("bankroll", updated);
@@ -41,16 +40,26 @@ public class WalletApiController {
     }
 
     @PostMapping("/withdraw")
-    public Map<String, Object> withdraw(@RequestParam int amount, HttpSession session) {
-        int current = getBankroll(session);
+    public Map<String, Object> withdraw(@RequestParam int amount, Principal principal) {
+        AppUser user = currentUser(principal);
+        int current = user.getBankroll();
         if (amount <= 0) amount = 0;
 
         int updated = Math.max(0, current - amount);
-        session.setAttribute(KEY, updated);
+        user.setBankroll(updated);
+        users.save(user);
 
         Map<String, Object> response = new HashMap<>();
         response.put("bankroll", updated);
         return response;
     }
-}
 
+    private AppUser currentUser(Principal principal) {
+        if (principal == null) {
+            throw new IllegalStateException("You must be logged in to use the wallet.");
+        }
+
+        return users.findByUsername(principal.getName())
+                .orElseThrow(() -> new IllegalStateException("Logged-in user was not found."));
+    }
+}

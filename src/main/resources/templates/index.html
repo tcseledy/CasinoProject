@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <head>
     <meta charset="UTF-8" />
     <title>Theo's Casino</title>
@@ -67,6 +67,48 @@
         max-width: 1100px;
         margin: 80px auto;
         padding: 0 20px;
+      }
+
+      .top-nav{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:18px;
+        max-width:1100px;
+        margin:0 auto;
+        padding:16px 18px;
+        border-bottom:1px solid var(--line);
+        background:rgba(8,20,37,.72);
+        backdrop-filter:blur(12px);
+      }
+
+      .brand{
+        color:var(--text);
+        font-weight:900;
+        text-decoration:none;
+        white-space:nowrap;
+      }
+
+      .nav-links{
+        display:flex;
+        align-items:center;
+        justify-content:flex-end;
+        gap:8px;
+        flex-wrap:wrap;
+      }
+
+      .nav-links a{
+        color:rgba(255,255,255,.72);
+        text-decoration:none;
+        font-size:14px;
+        font-weight:800;
+        padding:8px 10px;
+        border-radius:10px;
+      }
+
+      .nav-links a:hover{
+        color:#ffffff;
+        background:rgba(255,255,255,.09);
       }
 
       h1 {
@@ -160,16 +202,38 @@
           flex-direction: column;
           align-items: center;
         }
+
+        .top-nav{
+          align-items:flex-start;
+          flex-direction:column;
+        }
+
+        .nav-links{
+          justify-content:flex-start;
+        }
       }
     </style>
   </head>
 
-  <body>
+<body>
+      <nav class="top-nav" aria-label="Casino navigation">
+        <a class="brand" href="/">Theo's Casino</a>
+        <div class="nav-links">
+          <a href="/wallet">Wallet</a>
+          <a href="/blackjack">Blackjack</a>
+          <a href="/slots">Slots</a>
+          <a href="/roulette">Roulette</a>
+          <a sec:authorize="isAnonymous()" href="/log-in">Log-in</a>
+          <a sec:authorize="isAnonymous()" href="/signup">Sign-up</a>
+          <a sec:authorize="isAuthenticated()" href="/logout">Logout</a>
+        </div>
+      </nav>
+
+      <div sec:authorize="isAuthenticated()" style="margin-top:18px; font-size:14px;">
+          Logged in as <strong><span sec:authentication="name"></span></strong>
+      </div>
     <div class="wrap">
       <h1>Theo's Casino</h1>
-
-      <a class="login-link" href="/log-in">Log-in</a>
-      <a class="login-linka" href="/signup">Sign-up</a>
 
       <div class="games">
         <div class="game-card">

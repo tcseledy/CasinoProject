@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"></html>
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Log-in - Theo's Casino</title>
@@ -114,6 +114,14 @@
 
     <h1>Log-in</h1>
 
+    <div sec:authorize="isAuthenticated()" style="position:absolute; top:20px; right:20px;">
+        Welcome, <span sec:authentication="name"></span>!
+        <a href="/logout">Logout</a>
+    </div>
+    
+    <div sec:authorize="isAnonymous()" style="position:absolute; top:20px; right:20px;">
+    </div>    
+
     <div class="error" th:if="${param.error}">
         Invalid username or password.
     </div>
@@ -122,18 +130,13 @@
         You have been logged out.
     </div>    
 
-    <div class="error" th:if="${param.error}">
-        Invalid username or password.
+    <div class="error" style="color:#8affb1;" th:if="${param.signupSuccess}">
+        Account created. Log in below.
     </div>
 
-    <div class="error" style="color:#8affb1;" th:if="${param.logout}">
-        You have been logged out.
-    </div>
-
-    <!-- IMPORTANT: action must match loginProcessingUrl -->
     <form method="post" action="/log-in">
-        <input type="text" name="username" placeholder="Username" required />
-        <input type="password" name="password" placeholder="Password" required />
+        <input type="text" name="username" placeholder="Username" autocomplete="username" required />
+        <input type="password" name="password" placeholder="Password" autocomplete="current-password" required />
         <button type="submit">Log-in</button>
     </form>
 
