@@ -35,4 +35,9 @@ public class HomeController {
     public String roulette() {
         return "roulette";
     }
+
+    @GetMapping("/poker")
+    public String poker() {
+        return "poker";
+    }
 }

@@ -81,6 +81,14 @@
       border-radius:10px;
     }
 
+    .account-name{
+      color:var(--muted);
+      font-size:14px;
+      font-weight:800;
+      padding:8px 10px;
+      border-radius:10px;
+    }
+
     .nav-links a:hover,
     .nav-links a.active{
       color:var(--text);
@@ -122,6 +130,14 @@
       padding: 22px;
       box-shadow: 0 10px 30px rgba(0,0,0,.35);
       backdrop-filter: blur(10px);
+      color: var(--text);
+    }
+
+    .card h2{
+      color:#ffffff;
+      margin:0 0 12px 0;
+      font-size:22px;
+      letter-spacing:.2px;
     }
 
     .muted{ color: var(--muted); font-weight:600; }
@@ -168,6 +184,7 @@
       border-radius:14px;
       border:1px solid var(--line);
       background: rgba(15,23,42,0.40);
+      color: var(--text);
     }
 
     .win{ color: var(--success); font-weight:900; }
@@ -183,13 +200,20 @@
 </head>
 
 <body>
-  <nav class="top-nav" aria-label="Casino navigation" sec:authorize="isAuthenticated()">
+  <nav class="top-nav" aria-label="Casino navigation">
     <a class="brand" href="/">Theo's Casino</a>
     <div class="nav-links">
       <a class="active" href="/wallet">Wallet</a>
       <a href="/blackjack">Blackjack</a>
       <a href="/slots">Slots</a>
       <a href="/roulette">Roulette</a>
+      <a href="/poker">Poker</a>
+      <a sec:authorize="isAnonymous()" href="/log-in">Log-in</a>
+      <a sec:authorize="isAnonymous()" href="/signup">Sign-up</a>
+      <span sec:authorize="isAuthenticated()" class="account-name">
+        <span sec:authentication="name"></span>
+      </span>
+      <a sec:authorize="isAuthenticated()" href="/logout">Logout</a>
     </div>
   </nav>
 

@@ -42,13 +42,6 @@
         padding: 0 20px;
       }
 
-      .login-status {
-        color: rgba(255,255,255,.72);
-        font-size: 14px;
-        font-weight: 800;
-        padding: 8px 10px;
-      }
-
       .top-nav{
         display:flex;
         align-items:center;
@@ -80,6 +73,14 @@
       .nav-links a{
         color:rgba(255,255,255,.72);
         text-decoration:none;
+        font-size:14px;
+        font-weight:800;
+        padding:8px 10px;
+        border-radius:10px;
+      }
+
+      .account-name{
+        color:rgba(255,255,255,.72);
         font-size:14px;
         font-weight:800;
         padding:8px 10px;
@@ -204,9 +205,10 @@
           <a href="/blackjack">Blackjack</a>
           <a href="/slots">Slots</a>
           <a href="/roulette">Roulette</a>
+          <a href="/poker">Poker</a>
           <a sec:authorize="isAnonymous()" href="/log-in">Log-in</a>
           <a sec:authorize="isAnonymous()" href="/signup">Sign-up</a>
-          <span sec:authorize="isAuthenticated()" class="login-status">
+          <span sec:authorize="isAuthenticated()" class="account-name">
             <span sec:authentication="name"></span>
           </span>
           <a sec:authorize="isAuthenticated()" href="/logout">Logout</a>
@@ -235,6 +237,11 @@
         <div class="game-card">
           <h2>Roulette</h2>
           <a class="btn" href="/roulette">Play Now!</a>
+        </div>
+
+        <div class="game-card">
+          <h2>Live Poker</h2>
+          <a class="btn" href="/poker">Join Table</a>
         </div>
       </div>
 
