@@ -42,6 +42,13 @@
         padding: 0 20px;
       }
 
+      .login-status {
+        color: rgba(255,255,255,.72);
+        font-size: 14px;
+        font-weight: 800;
+        padding: 8px 10px;
+      }
+
       .top-nav{
         display:flex;
         align-items:center;
@@ -50,17 +57,17 @@
         width:100%;
         margin:0;
         padding:16px max(24px, calc((100vw - 1500px) / 2 + 24px));
-        border-bottom:none;
+        border-bottom:1px solid var(--line);
         background:rgba(8,20,37,.88);
         backdrop-filter:blur(12px);
       }
 
       .brand{
-        color:var(--text);
-        font-weight:400;
-        text-decoration:none;
-        white-space:nowrap;
-      }
+            color:#ffffff;
+            font-weight:400;
+            text-decoration:none;
+            white-space:nowrap;
+        }
 
       .nav-links{
         display:flex;
@@ -79,14 +86,6 @@
         border-radius:10px;
       }
 
-      .account-name{
-        color:rgba(255,255,255,.72);
-        font-size:14px;
-        font-weight:800;
-        padding:8px 10px;
-        border-radius:10px;
-      }
-
       .nav-links a:hover{
         color:#ffffff;
         background:rgba(255,255,255,.09);
@@ -94,7 +93,6 @@
 
       h1 {
         font-size: 56px;
-        font-weight: 900;
         margin: 0 0 28px 0;
         letter-spacing: 1px;
         text-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
@@ -151,7 +149,7 @@
         transform: translateY(1px);
       }
 
-      /* LinkedIn section */
+      /* Social links section */
       .link-section {
         margin-top: 70px;
         max-width: 820px;
@@ -165,14 +163,25 @@
         line-height: 1.4;
       }
 
-      .linkedin {
-        display: inline-block;
+      .social-links {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 18px;
         margin-top: 20px;
+      }
+
+      .social-link {
+        display: inline-block;
         transition: transform 0.15s ease;
       }
 
-      .linkedin:hover {
+      .social-link:hover {
         transform: scale(1.12);
+      }
+
+      .github-logo {
+        filter: brightness(0) invert(1);
       }
 
       @media (max-width: 900px) {
@@ -195,25 +204,26 @@
         }
       }
     </style>
+    <link href="/css/site-nav.css" rel="stylesheet">
   </head>
 
 <body>
-      <nav class="top-nav" aria-label="Casino navigation">
-        <a class="brand" href="/">Theo's Casino</a>
-        <div class="nav-links">
-          <a href="/wallet">Wallet</a>
-          <a href="/blackjack">Blackjack</a>
-          <a href="/slots">Slots</a>
-          <a href="/roulette">Roulette</a>
-          <a href="/poker">Poker</a>
-          <a sec:authorize="isAnonymous()" href="/log-in">Log-in</a>
-          <a sec:authorize="isAnonymous()" href="/signup">Sign-up</a>
-          <span sec:authorize="isAuthenticated()" class="account-name">
+  <nav class="top-nav" aria-label="Casino navigation">
+    <a class="brand" href="/">Theo's Casino</a>
+    <div class="nav-links">
+        <a href="/wallet">Wallet</a>
+        <a href="/blackjack">Blackjack</a>
+        <a href="/slots">Slots</a>
+        <a href="/roulette">Roulette</a>
+        <a href="/poker">Poker</a>
+        <a class="active" href="/log-in">Log-in</a>
+        <a href="/signup">Sign-up</a>
+        <span sec:authorize="isAuthenticated()" class="account-name">
             <span sec:authentication="name"></span>
-          </span>
-          <a sec:authorize="isAuthenticated()" href="/logout">Logout</a>
-        </div>
-      </nav>
+        </span>
+        <a sec:authorize="isAuthenticated()" href="/logout">Logout</a>
+    </div>
+</nav>
     <div class="wrap">
       <h1>Theo's Casino</h1>
 
@@ -248,22 +258,37 @@
       <div class="link-section">
         <p>
           I always wanted to do a casino coding project, and I did!<br />
-          Down below is my LinkedIn if you want to learn more about me.
+          Down below is my LinkedIn and my Github if you want to learn more about me.
         </p>
 
-        <br />
+        <div class="social-links">
+          <a
+            class="social-link"
+            href="https://www.linkedin.com/in/theo-cseledy-973768297/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg"
+              alt="LinkedIn"
+              style="width: 70px;"
+            />
+          </a>
 
-        <a
-          class="linkedin"
-          href="https://www.linkedin.com/in/theo-cseledy-973768297/"
-          target="_blank"
-        >
-          <img
-            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg"
-            alt="LinkedIn"
-            style="width: 70px;"
-          />
-        </a>
+          <a
+            class="social-link"
+            href="https://github.com/tcseledy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
+              alt="GitHub"
+              class="github-logo"
+              style="width: 70px;"
+            />
+          </a>
+        </div>
       </div>
     </div>
 

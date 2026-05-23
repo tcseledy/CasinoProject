@@ -50,6 +50,7 @@ public class PokerApiController {
         table.communityCards.clear();
         table.pot = 0;
         table.highestBet = 0;
+        table.playersActed.clear();
         table.handInProgress = true;
         table.message = username + " started a new hand.";
 
@@ -77,6 +78,7 @@ public class PokerApiController {
         }
 
         table.message = username + " checked.";
+        table.playersActed.add(username);
         advanceRound();
         return render(username);
     }
@@ -92,6 +94,7 @@ public class PokerApiController {
         table.pot += callAmount;
         table.message = username + " called $" + callAmount + ".";
 
+        table.playersActed.add(username);
         advanceRound();
         return render(username);
     }
@@ -111,6 +114,8 @@ public class PokerApiController {
         table.pot += added;
         table.message = username + " raised to $" + newBet + ".";
 
+        table.playersActed.clear();
+        table.playersActed.add(username);
         advanceTurn();
         return render(username);
     }
@@ -136,8 +141,10 @@ public class PokerApiController {
     private void advanceRound() {
         List<PokerPlayer> active = activePlayers();
         boolean betsMatched = active.stream().allMatch(player -> player.currentBet == table.highestBet);
+        boolean everyoneActed = active.stream()
+                .allMatch(player -> table.playersActed.contains(player.username));
 
-        if (!betsMatched) {
+        if (!betsMatched || !everyoneActed) {
             advanceTurn();
             return;
         }
@@ -146,6 +153,7 @@ public class PokerApiController {
             player.currentBet = 0;
         }
         table.highestBet = 0;
+        table.playersActed.clear();
 
         if (table.communityCards.isEmpty()) {
             table.communityCards.add(draw());
@@ -183,6 +191,7 @@ public class PokerApiController {
         table.message = message;
         table.handInProgress = false;
         table.currentTurn = null;
+        table.playersActed.clear();
     }
 
     private boolean canAct(String username) {
@@ -261,6 +270,7 @@ public class PokerApiController {
         List<String> communityCards = new ArrayList<>();
         int pot = 0;
         int highestBet = 0;
+        Set<String> playersActed = new HashSet<>();
         String currentTurn = null;
         boolean handInProgress = false;
         String message = "Join the table to start a live poker session.";
