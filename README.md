@@ -32,6 +32,6 @@ Note:
 
 This project is for educational purposes and does not use real money or gambling functionality.
 
-## Author:
+## Author
 
 Theo Cseledy
