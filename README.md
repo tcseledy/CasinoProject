@@ -31,3 +31,7 @@ http://localhost:8080
 Note:
 
 This project is for educational purposes and does not use real money or gambling functionality.
+
+## Author:
+
+Theo Cseledy
